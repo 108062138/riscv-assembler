@@ -97,9 +97,8 @@ class _S(Instruction):
 						
 								return mod_imm, mod_imm_2'''
 		mod_imm = format(((1 << 12) - 1) & int(imm), '012b')
-		if n == 1:
-			return mod_imm[0] + mod_imm[12-10 : 12-4]
-		return mod_imm[12-4 : 12 - 0] + mod_imm[1]
+		if n == 1: return mod_imm[0:7]
+		else: return mod_imm[7:12]
 
 
 class _SB(Instruction):
@@ -219,10 +218,10 @@ class _I_parse(InstructionParser):
 		line_num, code = tokens[-2], tokens[-1]
 		instr, rs1, imm, rd = tokens[0], None, None, None
 		if instr == "jalr":
-			if len(tokens) == 4+2:
-				rs1, imm, rd = reg_map[tokens[2]], super().JUMP(tokens[3], line_num, code), reg_map[tokens[1]]
-			else:
-				rs1, imm, rd = reg_map[tokens[1]], 0, reg_map["x1"]
+			if tokens[3][0] =='x':
+				rs1, imm, rd = reg_map[tokens[3]], tokens[2], reg_map[tokens[1]] # use for jalr rd, offset(rs1)
+			else: 
+				rs1, imm, rd = reg_map[tokens[2]], tokens[3], reg_map[tokens[1]] # normal jalr rs1, rs2, offset	
 		elif instr == "lw":
 			rs1, imm, rd = reg_map[tokens[3]], tokens[2], reg_map[tokens[1]]
 		elif instr == 'ld':

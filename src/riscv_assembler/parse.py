@@ -59,8 +59,9 @@ class _Parser:
 	@staticmethod
 	def handle_specific_instr(x : list) -> list:
 		# for sw, lw, lb, lh, sb, sh
-		if len(x[0]) == 2 and (x[0] in S_instr or x[0] in I_instr):
+		if (len(x[0]) == 2 and (x[0] in S_instr or x[0] in I_instr)) or (x[0]=='jalr' and len(x)==3): # op rd, offset(rs1)
 			y = x[-1].split('('); y[1] = y[1].replace(')','')
+			print('trigger special instr')
 			return x[0:-1] + y
 		elif 'requires jump' == 5:
 			...
