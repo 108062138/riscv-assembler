@@ -138,7 +138,6 @@ class _U(Instruction):
 	def compute_instr(self, instr, imm, rd):
 		instr = super().check_instr_valid(instr, U_instr)
 		opcode = 0
-
 		return "".join([
 			_U.immediate(imm),
 			super().reg(rd),
@@ -147,7 +146,10 @@ class _U(Instruction):
 
 	@staticmethod
 	def immediate(imm):
-		return format(int(imm) >> 12, '013b')
+		# return format(int(imm) >> 12, '013b')
+		high_20 = int(imm)
+		mod_imm = format(((1 << 20) - 1) & high_20, '020b')
+		return mod_imm
 
 class _UJ(Instruction):
 	def __repr__(self):
@@ -224,7 +226,13 @@ class _I_parse(InstructionParser):
 				rs1, imm, rd = reg_map[tokens[2]], tokens[3], reg_map[tokens[1]] # normal jalr rs1, rs2, offset	
 		elif instr == "lw":
 			rs1, imm, rd = reg_map[tokens[3]], tokens[2], reg_map[tokens[1]]
-		elif instr == 'ld':
+		elif instr == 'lh':
+			rs1, imm, rd = reg_map[tokens[3]], tokens[2], reg_map[tokens[1]]
+		elif instr == 'lb':
+			rs1, imm, rd = reg_map[tokens[3]], tokens[2], reg_map[tokens[1]]
+		elif instr == 'lbu':
+			rs1, imm, rd = reg_map[tokens[3]], tokens[2], reg_map[tokens[1]]
+		elif instr == 'lhu':
 			rs1, imm, rd = reg_map[tokens[3]], tokens[2], reg_map[tokens[1]]
 		else:
 			rs1, imm, rd = reg_map[tokens[2]], tokens[3], reg_map[tokens[1]]
@@ -265,7 +273,8 @@ class _U_parse(InstructionParser):
 		return "U Parser"
 
 	def organize(self, tokens):
-		instr, imm, rd = tokens[0], tokens[1], reg_map[tokens[2]]
+		print('in U type:', tokens[0], tokens[1], tokens[2])
+		instr, rd, imm = tokens[0], reg_map[tokens[1]], tokens[2]
 		return U(instr, imm, rd)
 
 class _UJ_parse(InstructionParser):
@@ -365,8 +374,7 @@ R_instr = [
 	"remu"
 ]
 I_instr = [
-	"addi", "lb", "lw",
-	"ld", "lbu", "lhu",
+	"addi", "lb", "lw", "lh", "lbu", "lhu",
 	"lwu", "fence", "fence.i", 
 	"slli", "slti", "sltiu", 
 	"xori", "slri", "srai",
