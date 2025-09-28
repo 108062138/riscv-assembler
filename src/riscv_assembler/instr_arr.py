@@ -288,10 +288,13 @@ class _UJ_parse(InstructionParser):
 	def organize(self, tokens):
 		line_num, code = tokens[-2], tokens[-1]
 		instr, imm, rd = tokens[0], None, None
+		print('see token len', len(tokens), 'and jal get:',tokens[0], tokens[1], tokens[2])
 		if len(tokens) == 3:
+			print('here')
 			imm, rd = super().JUMP(tokens[2], line_num, code), reg_map[tokens[1]]
 		else:
-			imm, rd = super().JUMP(tokens[1], line_num, code), reg_map["x1"]
+			print('there????')
+			imm, rd = super().JUMP(tokens[1], line_num, code), reg_map[tokens[2]]
 
 		return UJ(instr, imm, rd)
 
